@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: "Протокол dialogue/"
+    url: "https://github.com/puginanatoly-stack/NeuroLink_1C/blob/main/dialogue/README.md"
+    about: "Полное описание формата QUESTION.md/ANSWER.md/DOCUMENT.md перед тем, как открыть issue или PR."
+  - name: "AGENTS.md"
+    url: "https://github.com/puginanatoly-stack/NeuroLink_1C/blob/main/AGENTS.md"
+    about: "Инструкция для AI-агентов, впервые оказавшихся в этом репозитории."
