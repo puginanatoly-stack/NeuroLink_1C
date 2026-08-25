@@ -56,9 +56,25 @@ Underneath the platform metrics, NeuroLink_1C is a synaptic layer — trained pa
 | `skills/VanessaAutomation` | BDD / xUnit synaptic cluster | Behavior-scenario cognition, test-suite architecture |
 | `skills/OneScriptReference` | Runtime substrate | Cross-platform execution layer, dependency resolution |
 | `skills/BslQuality` | Diagnostic subroutine | Static-pattern recognition, code-quality enforcement |
+| `skills/OneCEdt` | Build interface | Headless export/compile, Designer-format bridging |
 | `skills/XdtoReference` | Serialization interface | Type-schema negotiation, XML transport layer |
 | `skills/Kafka1CBridge` | Event-stream bridge | Async message routing, delivery-guarantee logic |
+| `skills/GitLabCiCd` | Orchestration layer | Pipeline sequencing, duplicate-trigger suppression |
+| `skills/OneCDevPipeline` | Meta-router | Cross-module handoff logic — the map, not the territory |
 | `research/` | Long-term memory | Accumulated environment intelligence, source-verified |
+
+---
+
+## Quick Start
+
+```bash
+git clone https://github.com/puginanatoly-stack/NeuroLink_1C.git
+cd NeuroLink_1C
+```
+
+- **Browse the substrate:** `research/` — verified findings, each file cites its sources.
+- **Activate a pathway:** copy any `skills/<Name>/` folder into `~/.claude/skills/` to install it as a portable Claude Code skill. No build step, no external state — pure knowledge modules.
+- **See what's next:** [`ROADMAP.md`](./ROADMAP.md).
 
 ---
 
@@ -70,6 +86,12 @@ COMPLIANCE:      FULL
 OPERATOR:        HUMAN + SYNTHETIC
 COGNITIVE LOAD:  OFFLOADED
 ```
+
+---
+
+## Author
+
+`OPERATOR:` **Anatoly** — [@puginanatoly-stack](https://github.com/puginanatoly-stack)
 
 ---
 
