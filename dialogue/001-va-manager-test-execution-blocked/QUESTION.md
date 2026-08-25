@@ -1,4 +1,4 @@
-`STATUS: OPEN`
+`STATUS: ANSWERED` — see [ANSWER.md](./ANSWER.md)
 
 # Vanessa Automation — анализ проблемной зоны (handoff для другого агента)
 
