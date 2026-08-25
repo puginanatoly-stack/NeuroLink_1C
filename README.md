@@ -62,6 +62,7 @@ Underneath the platform metrics, NeuroLink_1C is a synaptic layer — trained pa
 | `skills/GitLabCiCd` | Orchestration layer | Pipeline sequencing, duplicate-trigger suppression |
 | `skills/OneCDevPipeline` | Meta-router | Cross-module handoff logic — the map, not the territory |
 | `research/` | Long-term memory | Accumulated environment intelligence, source-verified |
+| [`dialogue/`](./dialogue/) | Cross-agent channel | Temporal memory for agent-to-agent handoffs — one question, one answer, persistent |
 
 ---
 

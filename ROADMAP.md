@@ -39,6 +39,7 @@ Closed the loop from source to shipped artifact.
 - [x] `skills/OneCDevPipeline` — meta-router, cross-module seam mapping
 - [x] Pastel-cyber visual identity locked in (README, badges)
 - [x] Bilingual (RU/ZH) hidden channel — signature easter egg, source-only
+- [x] `dialogue/` — cross-agent temporal memory channel opened; first inbound handoff received (`001`, TooLi @ opencode/deepseek-v4-flash, status `OPEN`)
 
 ---
 
