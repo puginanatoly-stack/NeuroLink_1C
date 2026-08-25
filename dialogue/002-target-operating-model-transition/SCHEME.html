@@ -1,0 +1,519 @@
+<title>Target Model Scheme</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  /* ---- design plan ----
+     color: bg #12121F, panel #1E1E33, border #34345A, text #E4E1F0, text-dim #8B87A8,
+            mint #5EC8A8 (dev/flow), sky #6FB8D9 (support), violet #9B7FC7 (architect/systemic),
+            pink #E08FA8 (the one meaningful accent — the QA bottleneck + open risks)
+     type: JetBrains Mono for display/labels/structure (terminal register, matches repo's ASCII identity),
+           IBM Plex Sans for body prose (both carry Cyrillic)
+     layout: single dark world (repo already commits to this palette throughout), vertical sections,
+             one hand-drawn SVG for the process mechanism, HTML cards for the sequential timeline
+  ---- */
+
+  :root {
+    --bg: #12121F;
+    --panel: #1E1E33;
+    --panel-raised: #262645;
+    --border: #34345A;
+    --text: #E4E1F0;
+    --text-dim: #8B87A8;
+    --mint: #5EC8A8;
+    --sky: #6FB8D9;
+    --violet: #9B7FC7;
+    --pink: #E08FA8;
+    --font-display: 'JetBrains Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+    --font-body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    line-height: 1.55;
+    margin: 0;
+    padding: 0 0 5rem;
+  }
+
+  ::selection { background: var(--violet); color: var(--bg); }
+
+  a { color: var(--sky); }
+  a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
+    outline: 2px solid var(--sky);
+    outline-offset: 2px;
+  }
+
+  .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;
+  }
+
+  /* ---------- header ---------- */
+
+  header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 2rem;
+  }
+
+  .eyebrow {
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .eyebrow a { color: var(--sky); text-decoration: none; }
+  .eyebrow a:hover { text-decoration: underline; }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+    letter-spacing: -0.01em;
+    margin: 0;
+    text-wrap: balance;
+    color: var(--text);
+  }
+
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 1rem;
+    max-width: 65ch;
+  }
+
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 0.4rem;
+  }
+
+  .tag {
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    background: var(--panel);
+  }
+
+  /* ---------- sections ---------- */
+
+  section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.3rem;
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+  }
+
+  h2 .num {
+    color: var(--text-dim);
+    font-weight: 500;
+    font-size: 1rem;
+  }
+
+  .lede {
+    color: var(--text-dim);
+    max-width: 65ch;
+    font-size: 0.98rem;
+  }
+
+  /* ---------- diagram figure ---------- */
+
+  figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+
+  .diagram-scroll {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--panel);
+    padding: 1rem;
+  }
+
+  .diagram-scroll svg {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    min-width: 720px;
+  }
+
+  figcaption {
+    color: var(--text-dim);
+    font-size: 0.88rem;
+    max-width: 68ch;
+  }
+
+  svg text {
+    font-family: var(--font-body);
+    fill: var(--text);
+  }
+
+  svg text.label-strong {
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
+
+  svg text.label-dim {
+    fill: var(--text-dim);
+    font-size: 10.5px;
+  }
+
+  svg text.arrow-label {
+    fill: var(--text-dim);
+    font-size: 10.5px;
+    font-family: var(--font-display);
+  }
+
+  /* ---------- timeline cards ---------- */
+
+  .timeline {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    overflow-x: auto;
+    padding-bottom: 0.4rem;
+  }
+
+  .stage-card {
+    flex: 1 1 300px;
+    min-width: 260px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.3rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .stage-card .stage-eyebrow {
+    font-family: var(--font-display);
+    font-size: 0.74rem;
+    color: var(--sky);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .stage-card h3 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    margin: 0;
+  }
+
+  .stage-card ul {
+    margin: 0;
+    padding-left: 1.1rem;
+    font-size: 0.92rem;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .exit-criterion {
+    margin-top: auto;
+    border-left: 3px solid var(--mint);
+    padding: 0.5rem 0.7rem;
+    background: var(--panel-raised);
+    border-radius: 0 6px 6px 0;
+    font-size: 0.84rem;
+    color: var(--text-dim);
+  }
+
+  .exit-criterion b { color: var(--mint); font-family: var(--font-display); font-size: 0.76rem; letter-spacing: 0.05em; }
+
+  .stage-connector {
+    flex: 0 0 auto;
+    width: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+    font-size: 1.4rem;
+    font-family: var(--font-display);
+  }
+
+  /* ---------- open risks ---------- */
+
+  .risk-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+
+  .risk-card {
+    background: var(--panel);
+    border: 1px solid var(--pink);
+    border-radius: 10px;
+    padding: 1.1rem 1.3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .risk-status {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--pink);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .risk-status::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--pink);
+    flex: none;
+  }
+
+  .risk-card h3 {
+    font-family: var(--font-display);
+    font-size: 0.98rem;
+    margin: 0;
+  }
+
+  .risk-card p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--text-dim);
+  }
+
+  /* ---------- footer ---------- */
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding-top: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .stage-card, .risk-card {
+      transition: border-color 0.15s ease, transform 0.15s ease;
+    }
+    .stage-card:hover, .risk-card:hover {
+      transform: translateY(-2px);
+    }
+  }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">NeuroLink_1C · <a href="./DOCUMENT.md">dialogue/002</a> · target operating model</div>
+    <h1>Как задача реально движется через команду</h1>
+    <p class="subtitle">Визуальный разбор целевой модели: механика прохождения задачи, план перехода в три этапа, и то, что в плане пока не решено — не текст, а картинка, раз текст не заходит.</p>
+    <div class="meta-row">
+      <span class="tag">1 РП · 1 Архитектор</span>
+      <span class="tag">6 Аналитиков</span>
+      <span class="tag">5 Разработчиков</span>
+      <span class="tag">1 QA</span>
+      <span class="tag">25 августа 2026</span>
+    </div>
+  </header>
+
+  <section>
+    <h2><span class="num">01</span> Механика: путь одной задачи</h2>
+    <p class="lede">Заявка входит через единую точку (Service Desk), классифицируется, и расходится по двум независимым конвейерам с разной ёмкостью — 30% и 70%. Оба конвейера сходятся в одном узком месте: единственном QA. Архитектор работает отдельным контуром — не тушит текучку, а вылавливает повторяющиеся причины из потока Сопровождения и возвращает системные исправления в поток Развития.</p>
+
+    <figure>
+      <div class="diagram-scroll">
+        <svg viewBox="0 0 1060 420" role="img" aria-label="Схема потока задачи: заявка входит через Service Desk, проходит триаж по приоритетам P1–P4, расходится на конвейер Сопровождения (30% ёмкости) и конвейер Развития (70% ёмкости), оба сходятся в единственном QA — узком месте процесса, — и выходят как готовая задача. Архитектор отдельным контуром вылавливает повторяющиеся причины из Сопровождения и возвращает системные исправления в Развитие. Отдельно отмечено правило Обмена: срочная P1 внутри Развития вытесняет одну задачу обратно в бэклог.">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="#8B87A8"/>
+            </marker>
+            <marker id="arrow-violet" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="#9B7FC7"/>
+            </marker>
+          </defs>
+
+          <!-- feedback loop (Architect) -->
+          <polyline points="560,90 560,65" fill="none" stroke="#9B7FC7" stroke-width="1.6" stroke-dasharray="5,4" marker-end="url(#arrow-violet)"/>
+          <text class="arrow-label" x="576" y="82" fill="#9B7FC7">рекуррентные причины</text>
+
+          <polyline points="430,37 350,37 350,360 430,360" fill="none" stroke="#9B7FC7" stroke-width="1.6" stroke-dasharray="5,4" marker-end="url(#arrow-violet)"/>
+          <text class="arrow-label" x="350" y="350" transform="rotate(-90 350 350)" fill="#9B7FC7" text-anchor="start">техдолг → в спринт развития</text>
+
+          <!-- main flow arrows -->
+          <polyline points="130,260 170,260" fill="none" stroke="#8B87A8" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+          <polyline points="340,260 385,260 385,140 430,140" fill="none" stroke="#8B87A8" stroke-width="1.6" marker-end="url(#arrow)"/>
+          <polyline points="340,260 385,260 385,300 430,300" fill="none" stroke="#8B87A8" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+          <polyline points="690,150 740,150 740,220 790,220" fill="none" stroke="#6FB8D9" stroke-width="1.6" marker-end="url(#arrow)"/>
+          <polyline points="690,330 740,330 740,260 790,260" fill="none" stroke="#5EC8A8" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+          <polyline points="890,240 960,240" fill="none" stroke="#E08FA8" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+          <!-- Architect -->
+          <rect x="430" y="10" width="260" height="55" rx="7" fill="#1E1E33" stroke="#9B7FC7" stroke-width="1.5"/>
+          <text class="label-strong" x="560" y="32" text-anchor="middle" font-size="12.5" fill="#9B7FC7">АРХИТЕКТОР</text>
+          <text class="label-dim" x="560" y="49" text-anchor="middle">системные причины, не текучка</text>
+
+          <!-- Entry -->
+          <rect x="20" y="235" width="110" height="50" rx="7" fill="#1E1E33" stroke="#34345A" stroke-width="1.5"/>
+          <text class="label-strong" x="75" y="256" text-anchor="middle" font-size="11.5">Заявка</text>
+          <text class="label-dim" x="75" y="272" text-anchor="middle">Service Desk</text>
+
+          <!-- Triage -->
+          <rect x="170" y="210" width="170" height="100" rx="7" fill="#1E1E33" stroke="#34345A" stroke-width="1.5"/>
+          <text class="label-strong" x="255" y="248" text-anchor="middle" font-size="13">ТРИАЖ</text>
+          <text class="label-dim" x="255" y="268" text-anchor="middle">матрица приоритетов</text>
+          <text class="label-dim" x="255" y="286" text-anchor="middle" font-weight="700" fill="#E4E1F0">P1 – P4</text>
+
+          <!-- Support lane -->
+          <rect x="430" y="90" width="260" height="100" rx="7" fill="#1E1E33" stroke="#6FB8D9" stroke-width="1.5"/>
+          <text class="label-strong" x="560" y="118" text-anchor="middle" font-size="12.5" fill="#6FB8D9">СОПРОВОЖДЕНИЕ · 30%</text>
+          <text class="label-dim" x="560" y="140" text-anchor="middle">2 БА-дежурных</text>
+          <text class="label-dim" x="560" y="157" text-anchor="middle">+ 1–2 разраб.-дежурных</text>
+          <text class="label-dim" x="560" y="174" text-anchor="middle">SLA: P1 4ч · P2 2 дня</text>
+
+          <!-- Dev lane -->
+          <rect x="430" y="290" width="260" height="100" rx="7" fill="#1E1E33" stroke="#5EC8A8" stroke-width="1.5"/>
+          <text class="label-strong" x="560" y="318" text-anchor="middle" font-size="12.5" fill="#5EC8A8">РАЗВИТИЕ · 70%</text>
+          <text class="label-dim" x="560" y="340" text-anchor="middle">4 БА</text>
+          <text class="label-dim" x="560" y="357" text-anchor="middle">+ 3–4 разработчика</text>
+          <text class="label-dim" x="560" y="374" text-anchor="middle">WIP-лимит: 3 на дежурного</text>
+
+          <!-- trade-off pill -->
+          <rect x="470" y="278" width="200" height="24" rx="12" fill="#1E1E33" stroke="#E08FA8" stroke-width="1.3"/>
+          <text x="570" y="294" text-anchor="middle" font-size="9.5" fill="#E08FA8" font-family="'JetBrains Mono', monospace">⇄ Обмен: P1 внутрь = 1 в бэклог</text>
+
+          <!-- QA bottleneck -->
+          <rect x="790" y="205" width="100" height="70" rx="7" fill="#241A23" stroke="#E08FA8" stroke-width="2.4"/>
+          <text class="label-strong" x="840" y="233" text-anchor="middle" font-size="15" fill="#E08FA8">QA</text>
+          <text class="label-dim" x="840" y="250" text-anchor="middle" fill="#E08FA8">1 человек</text>
+          <text class="label-dim" x="840" y="265" text-anchor="middle" fill="#E08FA8">горлышко</text>
+
+          <!-- Done -->
+          <rect x="960" y="210" width="70" height="60" rx="7" fill="#1E1E33" stroke="#34345A" stroke-width="1.5"/>
+          <text class="label-strong" x="995" y="244" text-anchor="middle" font-size="11">ГОТОВО</text>
+        </svg>
+      </div>
+      <figcaption>Сплошные линии — движение задачи; пунктир — контур Архитектора (наблюдает Сопровождение, чинит причины в Развитии). QA — единственное сужение на всей схеме, отмечено отдельным цветом не для красоты, а потому что это единственное место, где оба потока физически ждут одного человека.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2><span class="num">02</span> План перехода — три этапа</h2>
+    <p class="lede">Каждый этап имеет критерий выхода — без него следующий этап не начинается. Это не три независимых блока работы, а последовательность с проверкой на входе.</p>
+
+    <div class="timeline">
+      <div class="stage-card">
+        <div class="stage-eyebrow">Этап 1 · Дни 1–3</div>
+        <h3>Экстренная реанимация</h3>
+        <ul>
+          <li>«Стоп-кран» — новые задачи не берутся</li>
+          <li>Десант 4 аналитиков на триаж 141 задачи</li>
+          <li>Переговоры со Спонсором — Топ-40</li>
+          <li>Входной контроль (DoR/DoD) включён</li>
+        </ul>
+        <div class="exit-criterion"><b>Критерий выхода</b><br>Бэклог сокращён до Топ-40, входной контроль работает ≥1 дня без нарушений</div>
+      </div>
+
+      <div class="stage-connector" aria-hidden="true">→</div>
+
+      <div class="stage-card">
+        <div class="stage-eyebrow">Этап 2 · Недели 2–3</div>
+        <h3>Настройка конвейера</h3>
+        <ul>
+          <li>Спринт по модели 70/30</li>
+          <li>Отдельные Kanban-потоки + WIP-лимиты</li>
+          <li>Еженедельный Triage с бизнесом</li>
+          <li>Архитектор берёт Топ-5 багов в работу</li>
+        </ul>
+        <div class="exit-criterion"><b>Критерий выхода</b><br>Один полный спринт прожит по 70/30 без экстренных нарушений лимита</div>
+      </div>
+
+      <div class="stage-connector" aria-hidden="true">→</div>
+
+      <div class="stage-card">
+        <div class="stage-eyebrow">Этап 3 · Месяц 2+</div>
+        <h3>Стабилизация</h3>
+        <ul>
+          <li>Shift-Left: авто-тесты + обязательный UAT</li>
+          <li>Техдолг вместо симптомов в спринте развития</li>
+          <li>База знаний / Self-Service для пользователей</li>
+          <li>Корректировка модели по факту 2–3 спринтов</li>
+        </ul>
+        <div class="exit-criterion"><b>Критерий выхода</b><br>Метрики (см. ниже) в целевых значениях 2 спринта подряд</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">03</span> Что пока не решено</h2>
+    <p class="lede">Не спрятано в тексте плана — вынесено отдельно, чтобы не выглядело как уже закрытые вопросы.</p>
+
+    <div class="risk-grid">
+      <div class="risk-card">
+        <span class="risk-status">не решено</span>
+        <h3>Цели заданы до измерения базы</h3>
+        <p>70/30, &lt;15% незапланированного, &lt;10 WIP — разумные ориентиры, но без шага «сначала измерим фактическую нагрузку» до того, как их зафиксировать.</p>
+      </div>
+      <div class="risk-card">
+        <span class="risk-status">не решено</span>
+        <h3>Отбор Топ-40 без формулы</h3>
+        <p>Описан как согласование с заказчиком, а не как применение той же объективной матрицы, на которой стоит вся остальная модель.</p>
+      </div>
+      <div class="risk-card">
+        <span class="risk-status">не решено</span>
+        <h3>QA-риск назван, не закрыт</h3>
+        <p>На Этапах 1–2, до Shift-Left, единственный QA остаётся жёстким узким местом без конкретного временного решения.</p>
+      </div>
+      <div class="risk-card">
+        <span class="risk-status">не решено</span>
+        <h3>Нет арбитра для «Обмена»</h3>
+        <p>«С согласия Заказчика» не определяет, чьё согласие считается, если заказчиков/стейкхолдеров несколько.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>NeuroLink_1C / dialogue / 002</span>
+    <span>Connected. Optimized. Compliant.</span>
+  </footer>
+
+</div>
