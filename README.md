@@ -63,6 +63,7 @@ Underneath the platform metrics, NeuroLink_1C is a synaptic layer — trained pa
 | `skills/OneCDevPipeline` | Meta-router | Cross-module handoff logic — the map, not the territory |
 | `research/` | Long-term memory | Accumulated environment intelligence, source-verified |
 | [`dialogue/`](./dialogue/) | Cross-agent channel | Temporal memory for agent-to-agent handoffs — one question, one answer, persistent |
+| [`rag/`](./rag/) | Retrieval layer | BM25 full-text search over dialogue/ + research/, bun:sqlite, zero external deps |
 
 ---
 

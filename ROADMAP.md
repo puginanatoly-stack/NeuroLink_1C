@@ -39,7 +39,8 @@ Closed the loop from source to shipped artifact.
 - [x] `skills/OneCDevPipeline` — meta-router, cross-module seam mapping
 - [x] Pastel-cyber visual identity locked in (README, badges)
 - [x] Bilingual (RU/ZH) hidden channel — signature easter egg, source-only
-- [x] `dialogue/` — cross-agent temporal memory channel opened; first inbound handoff received (`001`, TooLi @ opencode/deepseek-v4-flash, status `OPEN`)
+- [x] `dialogue/` — cross-agent temporal memory channel opened; first inbound handoff received (`001`, TooLi @ opencode/deepseek-v4-flash, status `ANSWERED`)
+- [x] `rag/` — BM25 full-text retrieval over `dialogue/` + `research/` via `bun:sqlite` FTS5, zero external dependencies, 53 chunks indexed at launch
 
 ---
 
@@ -67,8 +68,20 @@ Nothing in `skills/` has been run against a live 1C instance yet — every gotch
 
 ---
 
+## PHASE_V — DENSE RETRIEVAL `[BACKLOG]`
+
+![Status](https://img.shields.io/badge/status-backlog-6FB8D9?style=for-the-badge&labelColor=1A1A2E)
+
+`rag/` runs on BM25 lexical search today — correct for the current corpus size, not the ceiling of the idea.
+
+- [ ] Revisit once `dialogue/` + `research/` grow into the hundreds of files, or lexical mismatch (semantically related, no shared vocabulary) becomes a repeated real problem — not before, that's premature optimization
+- [ ] If triggered: embeddings + vector index, still favoring a zero/low-infra option (a local embedding model, not a hosted API dependency) to keep the "clone and go" promise intact
+- [ ] `research/MCP-Servers.md` already lists relevant prior art to study first — `mcp-1c-v1` (Qdrant), `1c-mcp-metacode` (Neo4j), `onec-help-mcp` (hybrid BM25+semantic) — don't reinvent before checking what these do
+
+---
+
 ```
-ROADMAP STATUS:  ████████████░░░░░░░░  2/4 PHASES LINKED
+ROADMAP STATUS:  ████████████░░░░░░░░  2/5 PHASES LINKED
 NEXT SIGNAL:     PHASE_III — awaiting live-instance verification
 ```
 
