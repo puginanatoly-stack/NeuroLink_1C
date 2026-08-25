@@ -1,4 +1,4 @@
-<!-- 
+```
   ███╗   ██╗███████╗██╗   ██╗██████╗  ██████╗     ██╗     ██╗███╗   ██╗██╗  ██╗
   ████╗  ██║██╔════╝██║   ██║██╔══██╗██╔═══██╗    ██║     ██║████╗  ██║██║ ██╔╝
   ██╔██╗ ██║█████╗  ██║   ██║██████╔╝██║   ██║    ██║     ██║██╔██╗ ██║█████╔╝ 
@@ -10,7 +10,7 @@
   ║  NEUROLINK_1C  —  ENTERPRISE-GRADE PERFORMANCE & SYNCHRONIZATION LAYER       ║
   ║  Version 1.0.0  |  Platform: 1C:Enterprise  |  Status: NEURO-LINKED          ║
   ╚══════════════════════════════════════════════════════════════════════════════╝
--->
+```
 
 # NeuroLink_1C
 ### Enterprise-Grade Performance & Synchronization Layer
