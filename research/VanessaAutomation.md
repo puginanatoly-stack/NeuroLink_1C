@@ -7,6 +7,7 @@
 - **Активность:** последний push — неделю назад (на момент исследования), 210 открытых issues, 21 PR — живой проект.
 - **Документация:** [pr-mex.github.io/vanessa-automation/dev](https://pr-mex.github.io/vanessa-automation/dev/)
 - **Запуск из командной строки:** параметры передаются через `VAParams.json` — см. [JsonParams reference](https://pr-mex.github.io/vanessa-automation/dev/JsonParams/JsonParamsEN/).
+- **Шаблоны для AI-генерации сценариев:** [`docs/AI/examples`](https://github.com/Pr-Mex/vanessa-automation/tree/develop/docs/AI/examples) — готовые примеры Gherkin-сценариев под конкретно AI-генерацию тестов.
 
 ### Форки — итог исследования
 
@@ -30,3 +31,4 @@
 - [vanessa-opensource/add](https://github.com/vanessa-opensource/add)
 - [xDrivenDevelopment/xUnitFor1C](https://github.com/xDrivenDevelopment/xUnitFor1C)
 - [Vanessa Automation docs](https://pr-mex.github.io/vanessa-automation/dev/)
+- Ссылка на `docs/AI/examples` обнаружена в докладе Александра Кунташова (канал **ИНФОСТАРТ**) — [«От задачи до работающего автотеста: как создавать и проверять сценарии 1C с помощью AI»](https://youtube.com/watch?v=dpZq08pGSMM), добавлено 2026-09-03.

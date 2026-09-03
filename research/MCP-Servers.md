@@ -21,6 +21,7 @@
 - [EDT-MCP](https://github.com/DitriXNew/EDT-MCP) — MCP-плагин для 1C:EDT, BSL-анализ + скриншоты форм
 - [CodePilot1C](https://github.com/ondysss/codepilot1c-edt) — AI-плагин для EDT, чат + agent mode + MCP Host
 - [1C: Platform Tools MCP](https://github.com/yellow-hammer/mcp-1c-platform-tools) — вызов команд VS Code расширения через MCP
+- [onec-client-mcp-devkit](https://github.com/1c-neurofish/onec-client-mcp-devkit/releases) — расширение 1С-клиента для работы MCP (тот же автор/организация, что `v8-session-manager` ниже)
 
 ### Фреймворки для создания MCP-серверов
 - [1c_mcp](https://github.com/vladimir-kharin/1c_mcp) — фреймворк MCP-серверов внутри 1С:Предприятие через расширения
@@ -94,3 +95,4 @@
 - [Untru/1c-mcp — каталог](https://github.com/Untru/1c-mcp)
 - [PulseMCP: 1C:Enterprise BSL Language Server MCP Server](https://www.pulsemcp.com/servers/fserg-1c-bsl-language-server)
 - [mcpservers.org: mcp-1c](https://mcpservers.org/servers/feenlace/mcp-1c)
+- Ссылка на `onec-client-mcp-devkit` обнаружена в докладе Александра Кунташова (канал **ИНФОСТАРТ**) — [«От задачи до работающего автотеста: как создавать и проверять сценарии 1C с помощью AI»](https://youtube.com/watch?v=dpZq08pGSMM), добавлено 2026-09-03.
