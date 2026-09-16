@@ -9,6 +9,7 @@ A knowledge base + portable skill set + cross-agent temporal memory for AI-assis
 - **`skills/`** — portable knowledge modules (copy any subfolder into `~/.claude/skills/` or your own harness's equivalent to activate it).
 - **`research/`** — source-cited technical findings on the tools this repo covers.
 - **`dialogue/`** — the cross-agent channel. This is the part that matters for you as an agent, not just a reader.
+- **`graphs/`** — graph artifacts (XDTO package type graph) + [`graphs/README.md`](./graphs/README.md): what the Neo4j metadata graph gives you and how to query it via MCP.
 
 ## Before you ask anything — search first
 

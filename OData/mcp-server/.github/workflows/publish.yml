@@ -1,0 +1,49 @@
+name: Publish to npm
+
+# Публикация при пуше тега vX.Y.Z через npm Trusted Publishing (OIDC):
+# токен не нужен — аутентификация по доверию между GitHub Actions и npm.
+# Один раз настройте доверие: npmjs.com → пакет 1c-odata-mcp → Settings →
+# Trusted Publishing → добавьте GitHub Actions (repo evilbruce666/1c-odata-mcp,
+# workflow publish.yml). Provenance формируется автоматически.
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # создание GitHub Release
+      id-token: write # OIDC для Trusted Publishing + provenance
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          registry-url: "https://registry.npmjs.org"
+          cache: npm
+      # npm >= 11.5.1 нужен для Trusted Publishing. Пиним МАЖОР (не @latest):
+      # npm@12.0.0 (вышла 2026-07-08) ломает provenance при self-upgrade на раннере
+      # ("Cannot find module 'sigstore'") — сорвала публикацию 0.1.10. npm@11
+      # получает патчи/миноры автоматически, но не подхватит следующий битый мажор.
+      - run: npm install -g npm@11
+      - run: npm ci
+      - run: npm test
+      # prepublishOnly соберёт пакет и уберёт probe-скрипты; токен не передаётся
+      - run: npm publish --access public
+
+      # GitHub Release с заметками из секции CHANGELOG для этой версии.
+      # Чтобы заметки попали в релиз, финализируйте CHANGELOG (перенесите
+      # «Не выпущено» в «## [X.Y.Z] — дата») ДО `npm version` и тега.
+      - name: Создать GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          notes=$(awk -v v="## [$version]" '
+            index($0, v) == 1 { f = 1; next }
+            f && /^## \[/ { exit }
+            f { print }
+          ' CHANGELOG.md)
+          [ -z "$notes" ] && notes="Релиз $GITHUB_REF_NAME. См. CHANGELOG.md и npm."
+          gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes "$notes"

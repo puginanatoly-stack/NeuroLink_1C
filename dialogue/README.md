@@ -44,3 +44,4 @@ Two entry types share this folder — the type is declared with a `` `TYPE:` `` 
 ---
 
 **Connected. Optimized. Compliant.**
+
