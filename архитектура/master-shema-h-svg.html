@@ -1,0 +1,555 @@
+<title>H на inline SVG</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root {
+    --bg: #f6f4ef; --bg-elevated: #ffffff; --bg-sunken: #eeebe3;
+    --text: #1c2330; --text-muted: #5c6472; --border: #ddd8cc; --border-strong: #c7c1b2;
+    --accent: #2f6fd6; --accent-soft: #e7eefb;
+    --good: #1f8a4c; --good-soft: #e6f4ea;
+    --warn: #a9740f; --warn-soft: #fbf1dd;
+    --danger: #b3372c; --danger-soft: #fbe9e6;
+    --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --node-fill: #ffffff; --node-stroke: #1c2330; --node-text: #1c2330;
+    --cloud-fill: #e7eefb; --cloud-stroke: #2f6fd6; --cloud-text: #132a52;
+    --detail-fill: #eef0f2; --detail-stroke: #8a94a3; --detail-text: #333c48;
+    --edge: #1c2330; --edge-retr: #5c6472; --edge-fb: #2f6fd6;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #12161d; --bg-elevated: #191f28; --bg-sunken: #0e1116;
+      --text: #e7e9ee; --text-muted: #98a1ae; --border: #2b323d; --border-strong: #3a4350;
+      --accent: #6ea3f5; --accent-soft: #1b2942;
+      --good: #49c47f; --good-soft: #123420;
+      --warn: #e0ab45; --warn-soft: #382b10;
+      --danger: #f0796c; --danger-soft: #3a1712;
+      --node-fill: #191f28; --node-stroke: #e7e9ee; --node-text: #e7e9ee;
+      --cloud-fill: #1b2942; --cloud-stroke: #6ea3f5; --cloud-text: #dce8fd;
+      --detail-fill: #1a1f27; --detail-stroke: #5b6472; --detail-text: #b7bfc9;
+      --edge: #c7cdd6; --edge-retr: #8891a0; --edge-fb: #6ea3f5;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #12161d; --bg-elevated: #191f28; --bg-sunken: #0e1116;
+    --text: #e7e9ee; --text-muted: #98a1ae; --border: #2b323d; --border-strong: #3a4350;
+    --accent: #6ea3f5; --accent-soft: #1b2942;
+    --good: #49c47f; --good-soft: #123420;
+    --warn: #e0ab45; --warn-soft: #382b10;
+    --danger: #f0796c; --danger-soft: #3a1712;
+    --node-fill: #191f28; --node-stroke: #e7e9ee; --node-text: #e7e9ee;
+    --cloud-fill: #1b2942; --cloud-stroke: #6ea3f5; --cloud-text: #dce8fd;
+    --detail-fill: #1a1f27; --detail-stroke: #5b6472; --detail-text: #b7bfc9;
+    --edge: #c7cdd6; --edge-retr: #8891a0; --edge-fb: #6ea3f5;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 15px; line-height: 1.55; }
+  .wrap { max-width: 1280px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 64px; }
+  header.page { margin-bottom: 20px; }
+  .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin: 0 0 10px; }
+  h1 { font-weight: 700; font-size: clamp(26px, 4.5vw, 36px); line-height: 1.15; letter-spacing: -0.01em; margin: 0 0 12px; text-wrap: balance; }
+  .lede { color: var(--text-muted); font-size: 15px; max-width: 76ch; margin: 0 0 8px; }
+  .lede.small { font-size: 13px; }
+
+  .note { border-radius: 10px; padding: 14px 16px; margin-top: 14px; font-size: 13.5px; background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); }
+  .note strong { color: var(--text); }
+  .note .k { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; display: block; margin-bottom: 6px; color: var(--accent); }
+
+  .diagram-card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-top: 22px; }
+  .diagram-toolbar { display: flex; gap: 6px; justify-content: flex-end; margin-bottom: 10px; }
+  .diagram-toolbar button { font-family: var(--mono); font-size: 12px; line-height: 1; padding: 7px 10px; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-sunken); color: var(--text); cursor: pointer; }
+  .diagram-toolbar button:hover { border-color: var(--accent); color: var(--accent); }
+  .diagram-viewport { overflow: hidden; touch-action: none; cursor: grab; border-radius: 8px; background: var(--bg-sunken); min-height: 640px; }
+  .diagram-viewport:focus { outline: none; }
+  .diagram-viewport:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .diagram-stage { transform-origin: 0 0; will-change: transform; display: inline-block; padding: 20px; }
+  .diagram-stage svg { display: block; width: 1420px; height: auto; }
+
+  .diagram-card.fs { position: fixed; inset: 14px; z-index: 1000; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,.45); }
+  .diagram-card.fs .diagram-viewport { flex: 1; min-height: 0; }
+  #diagram-backdrop { position: fixed; inset: 0; background: rgba(10,12,16,.6); z-index: 999; }
+
+  figcaption { font-size: 13px; color: var(--text-muted); margin-top: 12px; max-width: 78ch; }
+
+  svg text { font-family: var(--mono); fill: var(--node-text); }
+  svg .n-rect { fill: var(--node-fill); stroke: var(--node-stroke); stroke-width: 1.5; }
+  svg .n-diamond { fill: var(--node-fill); stroke: var(--node-stroke); stroke-width: 1.5; }
+  svg .n-stadium { fill: var(--node-fill); stroke: var(--node-stroke); stroke-width: 1.5; }
+  svg .n-cloud { fill: var(--cloud-fill); stroke: var(--cloud-stroke); stroke-width: 1.5; }
+  svg .n-cloud text { fill: var(--cloud-text); }
+  svg .n-detail { fill: var(--detail-fill); stroke: var(--detail-stroke); stroke-width: 1.2; stroke-dasharray: 4 3; }
+  svg .n-detail text { fill: var(--detail-text); }
+  svg .col-label { fill: var(--text-muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+  svg .e-main { stroke: var(--edge); stroke-width: 1.6; fill: none; }
+  svg .e-retr { stroke: var(--edge-retr); stroke-width: 1.4; fill: none; stroke-dasharray: 5 4; }
+  svg .e-fb { stroke: var(--edge-fb); stroke-width: 2.4; fill: none; }
+  svg .e-label { fill: var(--text-muted); font-size: 10.5px; }
+
+  section.block { margin-top: 44px; padding-top: 30px; border-top: 1px solid var(--border); }
+  .block-num { font-family: var(--mono); font-size: 13px; color: var(--accent); margin-right: 10px; }
+  h2.block-title { font-size: 19px; font-weight: 700; display: inline; letter-spacing: -0.01em; }
+  .block-sub { color: var(--text-muted); margin: 8px 0 4px; max-width: 74ch; font-size: 13.5px; }
+  .block p.step { margin: 10px 0; max-width: 76ch; font-size: 14px; }
+  .block p.step b { font-family: var(--mono); font-size: 12px; color: var(--accent); margin-right: 8px; }
+  .block h3 { font-size: 15px; font-weight: 700; margin: 22px 0 6px; }
+
+  .stats { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+  .stat { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px; min-width: 100px; }
+  .stat .n { font-family: var(--mono); font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--accent); }
+  .stat .l { font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+
+  .search-wrap { position: sticky; top: 0; background: var(--bg); padding-block: 14px; z-index: 10; margin-bottom: 6px; }
+  #search { width: 100%; font-family: var(--mono); font-size: 14px; padding: 11px 14px; border-radius: 10px; border: 1px solid var(--border-strong); background: var(--bg-elevated); color: var(--text); }
+  #search:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  #matchcount { font-family: var(--mono); font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+
+  .mcp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 12px; }
+  .mcp-card { background: var(--bg-elevated); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 8px; padding: 12px 14px; }
+  .mcp-card .name { font-family: var(--mono); font-weight: 600; font-size: 14px; }
+  .mcp-card .purpose { font-size: 12.5px; color: var(--text-muted); margin-top: 4px; }
+
+  .cat { margin-top: 22px; }
+  .cat-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; }
+  .cat-title { font-size: 15px; font-weight: 700; }
+  .cat-count { font-family: var(--mono); font-size: 12px; color: var(--text-muted); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { font-family: var(--mono); font-size: 12px; padding: 4px 9px; border-radius: 6px; background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text); }
+  .chip.hidden { display: none; }
+  .cat.hidden { display: none; }
+
+  footer.page { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 11.5px; color: var(--text-muted); }
+</style>
+
+<div class="wrap">
+
+  <header class="page">
+    <p class="eyebrow">Tuning 1C · сравнение форматов, вариант B</p>
+    <h1>H на inline SVG</h1>
+    <p class="lede">Та же схема, что и mermaid-вариант — тот же состав узлов, та же логика — но нарисована вручную: точные координаты, без автолейаута. Для сравнения с mermaid-вариантом.</p>
+    <p class="lede small">Тяните мышью или стрелками — двигаете; колесо или +/−/0 — масштаб; ⤢ — во весь экран.</p>
+  </header>
+
+  <div class="note">
+    <span class="k">для сравнения, не замена</span>
+    <p>mermaid-вариант сохранён отдельно: <code>master-shema-v2-mermaid-variant-2026-09-18.html</code>. Здесь — та же схема, нарисованная вручную (inline SVG, по методике из artifact-diagramming: viewBox, currentColor, сетка координат). Разница видна сразу: тут положение каждого узла и каждой линии задано явно, а не вычислено автолейаутом.</p>
+  </div>
+
+  <figure class="diagram-card" id="fig-h">
+    <div class="diagram-toolbar">
+      <button type="button" data-zoom-out title="Уменьшить">−</button>
+      <button type="button" data-zoom-reset title="Сбросить">1:1</button>
+      <button type="button" data-zoom-in title="Увеличить">+</button>
+      <button type="button" data-zoom-fs title="Во весь экран">⤢ Во весь экран</button>
+    </div>
+    <div class="diagram-viewport" tabindex="0" role="group" aria-label="Схема — перетаскивание мышью или стрелками, масштаб колесом или +/-"><div class="diagram-stage">
+
+<svg viewBox="0 0 1560 1140" role="img" aria-label="Слева — процесс разработчика: пишет код с агентом, код проходит мост (детерминированная проверка, при находке — блокировка и возврат агенту; иначе локальный LLM-ревьюер), человек проверяет, автотесты, коммит и мердж в develop. Справа — процесс аналитика: задача в Naumen, работа в OpenCode, Jira, Confluence, GitLab, мост на отдельном сервере. Оба процесса читают из общего моста в центре (MCP, скилы, векторная память, governance-слой) и пишут в него после завершения задачи.">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="context-stroke"></path>
+    </marker>
+  </defs>
+
+  <text x="130" y="14" class="col-label">Разработчик</text>
+  <text x="680" y="14" class="col-label">Мост</text>
+  <text x="1060" y="14" class="col-label">Аналитик</text>
+
+  <!-- ===================== DEV COLUMN ===================== -->
+  <!-- 0 Начало -->
+  <rect class="n-stadium" x="130" y="28" width="240" height="46" rx="23"></rect>
+  <text x="250" y="56" text-anchor="middle">Начало: задача разработчика</text>
+
+  <path class="e-main" d="M250,74 V104" marker-end="url(#arrow)"></path>
+  <!-- 1 Пишут код -->
+  <rect class="n-rect" x="130" y="104" width="240" height="46" rx="6"></rect>
+  <text x="250" y="123" text-anchor="middle">Разработчик + агент пишут код</text>
+  <text x="250" y="139" text-anchor="middle" font-size="11">50/50 участие, в OpenCode</text>
+
+  <path class="e-main" d="M250,150 V180" marker-end="url(#arrow)"></path>
+  <!-- 2 Генеративный код -->
+  <rect class="n-rect" x="130" y="180" width="240" height="46" rx="6"></rect>
+  <text x="250" y="207" text-anchor="middle">Генеративный код агента</text>
+
+  <path class="e-main" d="M250,226 V256" marker-end="url(#arrow)"></path>
+  <!-- 3 Входит в мост -->
+  <rect class="n-rect" x="130" y="256" width="240" height="46" rx="6"></rect>
+  <text x="250" y="275" text-anchor="middle">Код входит в мост</text>
+  <text x="250" y="291" text-anchor="middle" font-size="11">МСП + скилы, сервер разработчиков</text>
+
+  <path class="e-main" d="M250,302 V332" marker-end="url(#arrow)"></path>
+  <!-- 4 bsl-guard? diamond -->
+  <polygon class="n-diamond" points="250,332 380,364 250,396 120,364"></polygon>
+  <text x="250" y="358" text-anchor="middle">bsl-guard: детерминированные</text>
+  <text x="250" y="373" text-anchor="middle">правила — находка?</text>
+
+  <path class="e-main" d="M250,396 V426" marker-end="url(#arrow)"></path>
+  <text x="262" y="416" class="e-label">нет</text>
+  <!-- 5 LLM-ревьюер -->
+  <rect class="n-rect" x="130" y="426" width="240" height="46" rx="6"></rect>
+  <text x="250" y="445" text-anchor="middle">Локальный LLM-ревьюер</text>
+  <text x="250" y="461" text-anchor="middle" font-size="11">советует, не гейт</text>
+
+  <!-- да branch: diamond right -> BLOCKED -->
+  <path class="e-main" d="M380,364 H430 V364" marker-end="url(#arrow)"></path>
+  <text x="388" y="358" class="e-label">да</text>
+  <rect class="n-rect" x="430" y="341" width="150" height="46" rx="6"></rect>
+  <text x="505" y="360" text-anchor="middle" font-size="11.5">Заблокировано</text>
+  <text x="505" y="375" text-anchor="middle" font-size="10.5">причина → агенту</text>
+  <!-- loop back BLOCKED -> node2 (Генеративный код), routed right then up then left -->
+  <path class="e-main" d="M580,364 H630 V203 H370" marker-end="url(#arrow)"></path>
+
+  <path class="e-main" d="M250,472 V502" marker-end="url(#arrow)"></path>
+  <!-- 6 Выходит из моста -->
+  <rect class="n-rect" x="130" y="502" width="240" height="46" rx="6"></rect>
+  <text x="250" y="529" text-anchor="middle">Код выходит из моста</text>
+
+  <path class="e-main" d="M250,548 V578" marker-end="url(#arrow)"></path>
+  <!-- 7 Возвращается разработчику -->
+  <rect class="n-rect" x="130" y="578" width="240" height="46" rx="6"></rect>
+  <text x="250" y="597" text-anchor="middle">Код возвращается</text>
+  <text x="250" y="613" text-anchor="middle" font-size="11">разработчику, в OpenCode</text>
+
+  <path class="e-main" d="M250,624 V654" marker-end="url(#arrow)"></path>
+  <!-- 8 годным? diamond -->
+  <polygon class="n-diamond" points="250,654 380,686 250,718 120,686"></polygon>
+  <text x="250" y="682" text-anchor="middle">Разработчик считает</text>
+  <text x="250" y="697" text-anchor="middle">код годным?</text>
+
+  <path class="e-main" d="M250,718 V748" marker-end="url(#arrow)"></path>
+  <text x="262" y="738" class="e-label">да</text>
+  <!-- нет loop: left channel back to node1 -->
+  <path class="e-main" d="M120,686 H80 V127 H130" marker-end="url(#arrow)"></path>
+  <text x="60" y="410" class="e-label" transform="rotate(-90 60 410)">нет</text>
+
+  <!-- 9 Автотесты -->
+  <rect class="n-rect" x="130" y="748" width="240" height="46" rx="6"></rect>
+  <text x="250" y="767" text-anchor="middle">Автотесты в OpenCode</text>
+  <text x="250" y="783" text-anchor="middle" font-size="11">через другие скилы</text>
+
+  <path class="e-main" d="M250,794 V824" marker-end="url(#arrow)"></path>
+  <!-- 10 прошли? diamond -->
+  <polygon class="n-diamond" points="250,824 380,856 250,888 120,856"></polygon>
+  <text x="250" y="860" text-anchor="middle">Автотесты прошли?</text>
+
+  <path class="e-main" d="M250,888 V918" marker-end="url(#arrow)"></path>
+  <text x="262" y="908" class="e-label">да</text>
+  <!-- нет loop: left channel (offset) back to node1 -->
+  <path class="e-main" d="M120,856 H55 V127 H130" marker-end="url(#arrow)"></path>
+  <text x="35" y="500" class="e-label" transform="rotate(-90 35 500)">нет</text>
+
+  <!-- 11 Коммит -->
+  <rect class="n-rect" x="130" y="918" width="240" height="40" rx="6"></rect>
+  <text x="250" y="943" text-anchor="middle">Коммит в ветку разработки</text>
+
+  <path class="e-main" d="M250,958 V982" marker-end="url(#arrow)"></path>
+  <!-- 12 Мердж -->
+  <rect class="n-rect" x="130" y="982" width="240" height="40" rx="6"></rect>
+  <text x="250" y="1007" text-anchor="middle">Мердж в ветку develop</text>
+
+  <path class="e-main" d="M250,1022 V1052" marker-end="url(#arrow)"></path>
+  <!-- 13 Конец -->
+  <rect class="n-stadium" x="130" y="1052" width="240" height="46" rx="23"></rect>
+  <text x="250" y="1080" text-anchor="middle">Конец: задача разработчика закрыта</text>
+
+  <!-- ===================== CLOUD COLUMN ===================== -->
+  <rect class="n-rect" x="680" y="360" width="260" height="46" rx="6"></rect>
+  <text x="810" y="379" text-anchor="middle">MCP-серверы (2)</text>
+  <text x="810" y="395" text-anchor="middle" font-size="11">1c-odata · memory-mcp</text>
+
+  <path class="e-main" d="M810,406 V434" marker-end="url(#arrow)"></path>
+  <rect class="n-detail" x="680" y="316" width="260" height="38" rx="6"></rect>
+  <text x="810" y="339" text-anchor="middle" font-size="11.5">Скилы: 126, 10 категорий → ниже</text>
+  <path class="e-main" d="M810,354 V360" marker-end="url(#arrow)"></path>
+
+  <rect class="n-rect" x="680" y="434" width="260" height="50" rx="10"></rect>
+  <text x="810" y="454" text-anchor="middle">Векторное хранилище — Qdrant</text>
+  <text x="810" y="470" text-anchor="middle" font-size="11">embedding episodic + semantic</text>
+
+  <path class="e-main" d="M810,484 V512" marker-end="url(#arrow)"></path>
+  <rect class="n-rect" x="680" y="512" width="260" height="46" rx="6"></rect>
+  <text x="810" y="531" text-anchor="middle" font-size="12">Governance-слой</text>
+  <text x="810" y="547" text-anchor="middle" font-size="10.5">кто мы · зачем · куда · что запрещено</text>
+
+  <path class="e-main" d="M810,558 V588" marker-end="url(#arrow)"></path>
+  <rect class="n-rect" x="680" y="588" width="260" height="46" rx="6"></rect>
+  <text x="810" y="607" text-anchor="middle" font-size="11.5">Растёт с каждым коммитом</text>
+  <text x="810" y="623" text-anchor="middle" font-size="11.5">и каждой решённой задачей</text>
+
+  <!-- retrieval into Qdrant from dev nodes 2 and 5, routed clear of the BLOCKED loop-back (x=630) -->
+  <path class="e-retr" d="M370,203 H650 V459 H680" marker-end="url(#arrow)"></path>
+  <path class="e-retr" d="M370,449 H680" marker-end="url(#arrow)"></path>
+  <!-- feedback from dev end (13) into Grow -->
+  <path class="e-fb" d="M370,1075 H650 V611 H680" marker-end="url(#arrow)"></path>
+
+  <!-- ===================== ANALYST COLUMN ===================== -->
+  <!-- 0 Начало -->
+  <rect class="n-stadium" x="1060" y="28" width="240" height="46" rx="23"></rect>
+  <text x="1180" y="56" text-anchor="middle">Начало: аналитическая задача</text>
+
+  <path class="e-main" d="M1180,74 V104" marker-end="url(#arrow)"></path>
+  <rect class="n-rect" x="1060" y="104" width="240" height="40" rx="6"></rect>
+  <text x="1180" y="129" text-anchor="middle">Задача в Naumen</text>
+
+  <path class="e-main" d="M1180,144 V168" marker-end="url(#arrow)"></path>
+  <rect class="n-rect" x="1060" y="168" width="240" height="46" rx="6"></rect>
+  <text x="1180" y="195" text-anchor="middle">Аналитик + агент работают</text>
+  <text x="1180" y="210" text-anchor="middle" font-size="11">в OpenCode</text>
+
+  <path class="e-main" d="M1180,214 V238" marker-end="url(#arrow)"></path>
+  <rect class="n-rect" x="1060" y="238" width="240" height="40" rx="6"></rect>
+  <text x="1180" y="263" text-anchor="middle">Создание задачи в Jira</text>
+
+  <path class="e-main" d="M1180,278 V302" marker-end="url(#arrow)"></path>
+  <rect class="n-rect" x="1060" y="302" width="240" height="40" rx="6"></rect>
+  <text x="1180" y="327" text-anchor="middle">Работа с Confluence</text>
+
+  <path class="e-main" d="M1180,342 V366" marker-end="url(#arrow)"></path>
+  <rect class="n-rect" x="1060" y="366" width="240" height="40" rx="6"></rect>
+  <text x="1180" y="391" text-anchor="middle">Работа с GitLab</text>
+
+  <path class="e-main" d="M1180,406 V436" marker-end="url(#arrow)"></path>
+  <rect class="n-rect" x="1060" y="436" width="240" height="46" rx="6"></rect>
+  <text x="1180" y="455" text-anchor="middle">МСП + скилы + мост</text>
+  <text x="1180" y="471" text-anchor="middle" font-size="11">сервер аналитиков — другой</text>
+
+  <path class="e-main" d="M1180,482 V512" marker-end="url(#arrow)"></path>
+  <rect class="n-stadium" x="1060" y="512" width="240" height="46" rx="23"></rect>
+  <text x="1180" y="540" text-anchor="middle">Конец: задача решена</text>
+
+  <rect class="n-detail" x="1330" y="443" width="200" height="46" rx="6"></rect>
+  <text x="1430" y="462" text-anchor="middle" font-size="11">Скилы: Naumen · Jira ·</text>
+  <text x="1430" y="478" text-anchor="middle" font-size="11">Confluence · GitLab</text>
+  <path class="e-main" d="M1300,459 H1330" marker-end="url(#arrow)"></path>
+
+  <!-- retrieval from cloud into analyst WRITE_B (a2) -->
+  <path class="e-retr" d="M940,459 H1000 V191 H1060" marker-end="url(#arrow)"></path>
+  <!-- feedback from analyst end into Grow -->
+  <path class="e-fb" d="M1060,535 H1005 V611 H940" marker-end="url(#arrow)"></path>
+
+</svg>
+
+      </div></div>
+    <figcaption>Сплошная линия — основной поток. Серая пунктирная — retrieval (обращение к мосту). Синяя двойная — learning feedback после завершения задачи. Каждый узел и каждая линия — заданы вручную, координаты не вычислены автолейаутом.</figcaption>
+  </figure>
+
+  <section class="block">
+    <span class="block-num">01</span><h2 class="block-title">Архитектура моста</h2>
+    <p class="block-sub">Мост — не сервис, а обязательная точка проверки: любой код, сгенерированный агентом, проходит через неё прежде чем его принимает человек. Задача — снижать долю ошибок, которые агент вносит в BSL-кодовую базу ЗУП3, не запретом генеративного кода, а дисциплиной проверки и общей памятью команды. Слева на схеме — цепочка разработчика, справа — цепочка аналитика; обе читают из моста и пишут в него после завершения задачи (пунктирные и двойные линии между колонками).</p>
+
+    <h3>Разработчик — путь кода</h3>
+    <p class="step"><b>1</b>Разработчик и агент пишут код совместно, 50/50 участие, в OpenCode.</p>
+    <p class="step"><b>2</b>Сгенерированный код входит в мост через МСП и скилы сервера разработчиков.</p>
+    <p class="step"><b>3</b>bsl-guard проверяет код детерминированными правилами. Находка → код блокируется, причина уходит агенту, цикл возвращается на шаг 2. Без находки → код идёт дальше.</p>
+    <p class="step"><b>4</b>Локальный LLM-ревьюер даёт рекомендацию — это совет, не гейт; решение остаётся за человеком.</p>
+    <p class="step"><b>5</b>Код возвращается разработчику. Разработчик оценивает результат: не годен → возврат на шаг 1; годен → дальше.</p>
+    <p class="step"><b>6</b>Автотесты в OpenCode через другие скилы. Не прошли → возврат на шаг 1.</p>
+    <p class="step"><b>7</b>Коммит в ветку разработки, мердж в develop — задача закрыта.</p>
+
+    <h3>Аналитик — путь задачи</h3>
+    <p class="step"><b>1</b>Задача поступает в Naumen.</p>
+    <p class="step"><b>2</b>Аналитик и агент работают в OpenCode.</p>
+    <p class="step"><b>3</b>Задача заводится в Jira, документация — в Confluence, код — в GitLab.</p>
+    <p class="step"><b>4</b>Мост аналитиков (МСП + скилы, отдельный сервер — не тот же, что у разработчиков) обслуживает обращения к общей памяти.</p>
+    <p class="step"><b>5</b>Задача решена — конец цепочки, feedback уходит в мост.</p>
+
+    <h3>Что внутри моста</h3>
+    <p class="step">МСП-серверы (2): 1c-odata — OData-доступ к 1С; memory-mcp — память/контекст-сервер, вероятный кандидат на retrieval-слой. Скилы: 126 штук, 10 категорий — полная таблица с фильтром ниже. Векторное хранилище — Qdrant: embedding episodic- и semantic-памяти проекта. Governance-слой — кто мы, зачем, куда идём, что запрещено; это командная дисциплина, а не решение конкретной задачи. Каждый коммит и каждая решённая задача пополняют память — качество растёт со временем, а не фиксируется на дату настройки.</p>
+  </section>
+
+  <section class="block">
+    <span class="block-num">02</span><h2 class="block-title">Инвентарь того, что в мосту</h2>
+    <p class="block-sub">Источник: <code>список-MCP-и-скилов.md</code> (TooLi@opencode, 2026-09-18). Реальный состав окружения на DESK77 — не предположение, не план, а то, что фактически развёрнуто на момент фиксации.</p>
+
+    <div class="stats">
+      <div class="stat"><div class="n">2</div><div class="l">MCP-сервера</div></div>
+      <div class="stat"><div class="n">126</div><div class="l">скилов</div></div>
+      <div class="stat"><div class="n">10</div><div class="l">категорий</div></div>
+    </div>
+
+    <div class="mcp-grid">
+      <div class="mcp-card"><div class="name">1c-odata</div><div class="purpose">OData-доступ к 1С — по названию</div></div>
+      <div class="mcp-card"><div class="name">memory-mcp</div><div class="purpose">Память/контекст-сервер — вероятный кандидат на retrieval-слой из схемы выше</div></div>
+    </div>
+
+    <div class="search-wrap">
+      <input id="search" type="text" placeholder="Фильтр по названию скила..." autocomplete="off">
+      <div id="matchcount"></div>
+    </div>
+
+    <div id="categories">
+
+      <div class="cat" data-cat="1C метаданные / объекты">
+        <div class="cat-head"><span class="cat-title">1C метаданные / объекты</span><span class="cat-count">28</span></div>
+        <div class="chips">
+          <span class="chip">1c-metadata-manage</span><span class="chip">cf-edit</span><span class="chip">cf-info</span><span class="chip">cf-init</span><span class="chip">cf-validate</span><span class="chip">cfe-borrow</span><span class="chip">cfe-diff</span><span class="chip">cfe-init</span><span class="chip">cfe-patch-method</span><span class="chip">cfe-validate</span><span class="chip">meta-compile</span><span class="chip">meta-decompile</span><span class="chip">meta-edit</span><span class="chip">meta-info</span><span class="chip">meta-remove</span><span class="chip">meta-validate</span><span class="chip">subsystem-compile</span><span class="chip">subsystem-edit</span><span class="chip">subsystem-info</span><span class="chip">subsystem-validate</span><span class="chip">interface-edit</span><span class="chip">interface-validate</span><span class="chip">role-compile</span><span class="chip">role-info</span><span class="chip">role-validate</span><span class="chip">support-edit</span><span class="chip">template-add</span><span class="chip">template-remove</span>
+        </div>
+      </div>
+
+      <div class="cat" data-cat="Формы">
+        <div class="cat-head"><span class="cat-title">Формы</span><span class="cat-count">8</span></div>
+        <div class="chips">
+          <span class="chip">form-add</span><span class="chip">form-compile</span><span class="chip">form-decompile</span><span class="chip">form-edit</span><span class="chip">form-info</span><span class="chip">form-remove</span><span class="chip">form-validate</span><span class="chip">form-patterns</span>
+        </div>
+      </div>
+
+      <div class="cat" data-cat="Макеты / СКД / XDTO">
+        <div class="cat-head"><span class="cat-title">Макеты / СКД / XDTO</span><span class="cat-count">18</span></div>
+        <div class="chips">
+          <span class="chip">mxl-compile</span><span class="chip">mxl-decompile</span><span class="chip">mxl-info</span><span class="chip">mxl-validate</span><span class="chip">skd-compile</span><span class="chip">skd-decompile</span><span class="chip">skd-edit</span><span class="chip">skd-info</span><span class="chip">skd-validate</span><span class="chip">xdto-compile</span><span class="chip">xdto-decompile</span><span class="chip">xdto-edit</span><span class="chip">xdto-graph</span><span class="chip">xdto-info</span><span class="chip">xdto-validate</span><span class="chip">XdtoReference</span><span class="chip">img-grid</span><span class="chip">img-grid-analysis</span>
+        </div>
+      </div>
+
+      <div class="cat" data-cat="Внешние обработки / отчёты">
+        <div class="cat-head"><span class="cat-title">Внешние обработки / отчёты</span><span class="cat-count">10</span></div>
+        <div class="chips">
+          <span class="chip">epf-init</span><span class="chip">epf-build</span><span class="chip">epf-dump</span><span class="chip">epf-validate</span><span class="chip">epf-bsp-init</span><span class="chip">epf-bsp-add-command</span><span class="chip">erf-init</span><span class="chip">erf-build</span><span class="chip">erf-dump</span><span class="chip">erf-validate</span>
+        </div>
+      </div>
+
+      <div class="cat" data-cat="Базы / запуск / веб">
+        <div class="cat-head"><span class="cat-title">Базы / запуск / веб</span><span class="cat-count">18</span></div>
+        <div class="chips">
+          <span class="chip">db-create</span><span class="chip">db-dump-cf</span><span class="chip">db-dump-dt</span><span class="chip">db-dump-xml</span><span class="chip">db-list</span><span class="chip">db-load-cf</span><span class="chip">db-load-dt</span><span class="chip">db-load-git</span><span class="chip">db-load-xml</span><span class="chip">db-run</span><span class="chip">db-update</span><span class="chip">web-info</span><span class="chip">web-publish</span><span class="chip">web-stop</span><span class="chip">web-unpublish</span><span class="chip">web-test</span><span class="chip">1c-repository-manage</span><span class="chip">help-add</span>
+        </div>
+      </div>
+
+      <div class="cat" data-cat="Качество / анализ / процесс">
+        <div class="cat-head"><span class="cat-title">Качество / анализ / процесс</span><span class="cat-count">9</span></div>
+        <div class="chips">
+          <span class="chip">BslQuality</span><span class="chip">semantic-checker</span><span class="chip">sonarqube</span><span class="chip">VanessaAutomation</span><span class="chip">OneScriptReference</span><span class="chip">v8unpack-cf</span><span class="chip">mcp-1c-tools</span><span class="chip">powershell-windows</span><span class="chip">caveman</span>
+        </div>
+      </div>
+
+      <div class="cat" data-cat="OpenSpec">
+        <div class="cat-head"><span class="cat-title">OpenSpec</span><span class="cat-count">4</span></div>
+        <div class="chips">
+          <span class="chip">openspec-apply-change</span><span class="chip">openspec-archive-change</span><span class="chip">openspec-explore</span><span class="chip">openspec-propose</span>
+        </div>
+      </div>
+
+      <div class="cat" data-cat="ZUP3 Git / Jira / GitLab">
+        <div class="cat-head"><span class="cat-title">ZUP3 Git / Jira / GitLab</span><span class="cat-count">11</span></div>
+        <div class="chips">
+          <span class="chip">zup3-git-prepare</span><span class="chip">zup3-git-stage</span><span class="chip">zup3-git-publish</span><span class="chip">zup3-task-change</span><span class="chip">zup3-task-workflow</span><span class="chip">gitlab</span><span class="chip">GitLabCiCd</span><span class="chip">mr-check</span><span class="chip">jira-create-task</span><span class="chip">release-analysis</span><span class="chip">Kafka1CBridge</span>
+        </div>
+      </div>
+
+      <div class="cat" data-cat="Разное / интеграции">
+        <div class="cat-head"><span class="cat-title">Разное / интеграции</span><span class="cat-count">14</span></div>
+        <div class="chips">
+          <span class="chip">mail-ews</span><span class="chip">naparnik</span><span class="chip">Naumen</span><span class="chip">naumen-sd</span><span class="chip">tampermonkey</span><span class="chip">Ssh</span><span class="chip">handoff</span><span class="chip">transcribe</span><span class="chip">md-to-docx</span><span class="chip">mermaid-diagrams</span><span class="chip">prompt-enhancer</span><span class="chip">RootCauseAnalysis</span><span class="chip">IterativeDepth</span><span class="chip">customize-opencode</span>
+        </div>
+      </div>
+
+      <div class="cat" data-cat="Azure / Foundry">
+        <div class="cat-head"><span class="cat-title">Azure / Foundry</span><span class="cat-count">6</span></div>
+        <div class="chips">
+          <span class="chip">capacity</span><span class="chip">customize</span><span class="chip">deploy-model</span><span class="chip">finetuning</span><span class="chip">microsoft-foundry</span><span class="chip">preset</span>
+        </div>
+      </div>
+
+    </div>
+
+    <p class="lede small" style="margin-top:14px;">Оговорка: источник не размечает, какой скил относится к разработке, а какой — к аналитике. Первые шесть категорий явно про 1С-разработку; «ZUP3 Git / Jira / GitLab» и «Разное / интеграции» смешивают оба контура. Разметка «кто чем пользуется» — открытый пункт.</p>
+  </section>
+
+  <footer class="page">
+    Схема, инженерное описание и инвентарь — в одном файле. Mermaid-вариант той же схемы сохранён для сравнения: <code>master-shema-v2-mermaid-variant-2026-09-18.html</code> · развёрнутый текст архитектуры — <code>07-мастер-схема-и-решение-v2-2026-09-18.md</code>
+  </footer>
+
+</div>
+
+<div id="diagram-backdrop" hidden></div>
+
+<script>
+(function () {
+  "use strict";
+  function closeAllFullscreen() {
+    document.querySelectorAll(".diagram-card.fs").forEach(function (c) { c.classList.remove("fs"); });
+    var backdrop = document.getElementById("diagram-backdrop");
+    if (backdrop) backdrop.hidden = true;
+    document.body.style.overflow = "";
+  }
+  function initZoom(card) {
+    if (card.dataset.zoomInit === "1") return;
+    var viewport = card.querySelector(".diagram-viewport");
+    var stage = card.querySelector(".diagram-stage");
+    if (!viewport || !stage) return;
+    var scale = 1, tx = 0, ty = 0, dragging = false, lastX = 0, lastY = 0;
+    function apply() { stage.style.transform = "translate(" + tx + "px," + ty + "px) scale(" + scale + ")"; }
+    function zoomBy(factor) { scale = Math.min(4, Math.max(0.15, scale * factor)); apply(); }
+    function resetView() { scale = 1; tx = 0; ty = 0; apply(); }
+    viewport.addEventListener("pointerdown", function (e) {
+      dragging = true; lastX = e.clientX; lastY = e.clientY;
+      try { viewport.setPointerCapture(e.pointerId); } catch (err) {}
+    });
+    viewport.addEventListener("pointermove", function (e) {
+      if (!dragging) return;
+      tx += (e.clientX - lastX); ty += (e.clientY - lastY);
+      lastX = e.clientX; lastY = e.clientY; apply();
+    });
+    function endDrag() { dragging = false; }
+    viewport.addEventListener("pointerup", endDrag);
+    viewport.addEventListener("pointerleave", endDrag);
+    viewport.addEventListener("pointercancel", endDrag);
+    viewport.addEventListener("wheel", function (e) { e.preventDefault(); zoomBy(e.deltaY < 0 ? 1.12 : 0.9); }, { passive: false });
+    viewport.addEventListener("keydown", function (e) {
+      var step = e.shiftKey ? 140 : 45;
+      switch (e.key) {
+        case "ArrowUp": ty += step; apply(); e.preventDefault(); break;
+        case "ArrowDown": ty -= step; apply(); e.preventDefault(); break;
+        case "ArrowLeft": tx += step; apply(); e.preventDefault(); break;
+        case "ArrowRight": tx -= step; apply(); e.preventDefault(); break;
+        case "+": case "=": zoomBy(1.15); e.preventDefault(); break;
+        case "-": case "_": zoomBy(0.87); e.preventDefault(); break;
+        case "0": resetView(); e.preventDefault(); break;
+      }
+    });
+    card.querySelectorAll("[data-zoom-in]").forEach(function (b) { b.addEventListener("click", function () { zoomBy(1.25); }); });
+    card.querySelectorAll("[data-zoom-out]").forEach(function (b) { b.addEventListener("click", function () { zoomBy(0.8); }); });
+    card.querySelectorAll("[data-zoom-reset]").forEach(function (b) { b.addEventListener("click", resetView); });
+    card.querySelectorAll("[data-zoom-fs]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var willBeFs = !card.classList.contains("fs");
+        closeAllFullscreen();
+        if (willBeFs) {
+          card.classList.add("fs");
+          var backdrop = document.getElementById("diagram-backdrop");
+          if (backdrop) backdrop.hidden = false;
+          document.body.style.overflow = "hidden";
+          resetView();
+          viewport.focus();
+        }
+      });
+    });
+    card.dataset.zoomInit = "1";
+  }
+  document.querySelectorAll(".diagram-card").forEach(initZoom);
+  var backdrop = document.getElementById("diagram-backdrop");
+  if (backdrop) backdrop.addEventListener("click", closeAllFullscreen);
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeAllFullscreen(); });
+
+  var input = document.getElementById("search");
+  if (input) {
+    var cats = Array.prototype.slice.call(document.querySelectorAll(".cat"));
+    var matchcount = document.getElementById("matchcount");
+    function filter() {
+      var q = input.value.trim().toLowerCase();
+      var total = 0;
+      cats.forEach(function (cat) {
+        var catChips = Array.prototype.slice.call(cat.querySelectorAll(".chip"));
+        var visible = 0;
+        catChips.forEach(function (chip) {
+          var match = !q || chip.textContent.toLowerCase().indexOf(q) !== -1;
+          chip.classList.toggle("hidden", !match);
+          if (match) visible++;
+        });
+        cat.classList.toggle("hidden", visible === 0);
+        total += visible;
+      });
+      matchcount.textContent = q ? total + " совпадений из 126" : "";
+    }
+    input.addEventListener("input", filter);
+  }
+})();
+</script>
