@@ -18,31 +18,26 @@
 
 ```mermaid
 flowchart TB
-    STARTA(["Начало: задача разработчика"]) --> WRITE_A["Разработчик + агент пишут код совместно<br/>50/50 участие, в OpenCode"]
-    WRITE_A --> GEN_A["Генеративный код агента"]
-    GEN_A --> ENTRY_A["Код входит в мост<br/>МСП + скилы, Linux-сервер разработчиков"]
-    ENTRY_A --> HOOK_A{"bsl-guard: детерминированные<br/>правила — находка?"}
-    HOOK_A -- нет --> REVIEW_A["Локальный LLM-ревьюер<br/>советует, не гейт"]
-    HOOK_A -- да --> BLOCKED_A["Заблокировано<br/>причина возвращается агенту"]
+    STARTA([Начало: задача разработчика]) --> WRITE_A[Разработчик и агент пишут код совместно]
+    WRITE_A --> GEN_A[Генеративный код агента]
+    GEN_A --> ENTRY_A[Код входит в мост]
+    ENTRY_A --> HOOK_A{bsl-guard: находка?}
+    HOOK_A -->|нет| REVIEW_A[Локальный LLM-ревьюер советует]
+    HOOK_A -->|да| BLOCKED_A[Заблокировано, причина агенту]
     BLOCKED_A --> GEN_A
-    REVIEW_A --> EXIT_A["Код выходит из моста"]
-    EXIT_A --> BACK_A["Код возвращается разработчику<br/>в OpenCode"]
-    BACK_A --> GOODQ{"Разработчик считает код годным?"}
-    GOODQ -- нет --> WRITE_A
-    GOODQ -- да --> TEST_A["Автотесты в OpenCode<br/>через другие скилы"]
-    TEST_A --> TESTQ{"Автотесты прошли?"}
-    TESTQ -- нет --> WRITE_A
-    TESTQ -- да --> COMMIT_A["Коммит в ветку разработки"]
-    COMMIT_A --> MERGE_A["Мердж в ветку develop"]
-    MERGE_A --> ENDOKA(["Конец: задача разработчика закрыта"])
-
-    CLOUD_A[["☁ Мост — см. схему ниже"]]
-    GEN_A -. retrieval .-> CLOUD_A
-    REVIEW_A -. retrieval .-> CLOUD_A
-    ENDOKA ==>|feedback| CLOUD_A
-
-    classDef cloud fill:#e7eefb,stroke:#2f6fd6,color:#132a52,stroke-width:1.5px;
-    class CLOUD_A cloud;
+    REVIEW_A --> EXIT_A[Код выходит из моста]
+    EXIT_A --> BACK_A[Код возвращается разработчику]
+    BACK_A --> GOODQ{Разработчик считает код годным?}
+    GOODQ -->|нет| WRITE_A
+    GOODQ -->|да| TEST_A[Автотесты в OpenCode]
+    TEST_A --> TESTQ{Автотесты прошли?}
+    TESTQ -->|нет| WRITE_A
+    TESTQ -->|да| COMMIT_A[Коммит в ветку разработки]
+    COMMIT_A --> MERGE_A[Мердж в ветку develop]
+    MERGE_A --> ENDOKA([Конец: задача закрыта])
+    GEN_A -.-> CLOUD_A[Мост, см. схему ниже]
+    REVIEW_A -.-> CLOUD_A
+    ENDOKA ==> CLOUD_A
 ```
 
 1. Разработчик и агент пишут код совместно, 50/50 участие, в OpenCode.
@@ -58,13 +53,10 @@ flowchart TB
 
 ```mermaid
 flowchart TB
-    MCP_LIST["MCP-серверы (2):<br/>1c-odata · memory-mcp"] --> EMBED
-    SKILLS_LIST[["Скилы: 126, 10 категорий<br/>→ таблица ниже"]] --> EMBED
-    EMBED[("Векторное хранилище — Qdrant<br/>embedding episodic + semantic")] --> GOV["Governance:<br/>кто мы · зачем · куда · что запрещено"]
-    GOV --> GROW["Растёт с каждым коммитом<br/>и решённой задачей"]
-
-    classDef detail fill:#eef0f2,stroke:#8a94a3,color:#333c48,stroke-width:1px,stroke-dasharray:3 3;
-    class SKILLS_LIST detail;
+    MCP_LIST[MCP-серверы: 1c-odata, memory-mcp] --> EMBED[Векторное хранилище Qdrant]
+    SKILLS_LIST[Скилы: 126, 10 категорий] --> EMBED
+    EMBED --> GOV[Governance: кто мы, зачем, что запрещено]
+    GOV --> GROW[Растёт с каждым коммитом и решённой задачей]
 ```
 
 МСП-серверы (2): `1c-odata` — OData-доступ к 1С; `memory-mcp` — память/контекст-сервер, вероятный
@@ -76,23 +68,15 @@ flowchart TB
 
 ```mermaid
 flowchart TB
-    STARTB(["Начало: аналитическая задача"]) --> NAUMEN["Задача в Naumen"]
-    NAUMEN --> WRITE_B["Аналитик + агент работают в OpenCode"]
-    WRITE_B --> JIRA["Создание задачи в Jira"]
-    JIRA --> CONF["Работа с Confluence"]
-    CONF --> GITLAB["Работа с GitLab"]
-    GITLAB --> BRIDGE_B["МСП + скилы + мост<br/>Linux-сервер аналитиков — другой сервер"]
-    BRIDGE_B --> ENDOKB(["Конец: аналитическая задача решена"])
-
-    CLOUD_B[["☁ Мост — см. схему выше"]]
-    WRITE_B -. retrieval .-> CLOUD_B
-    ENDOKB ==>|feedback| CLOUD_B
-    BRIDGE_B -.-> SKILLSB[["Скилы: Naumen · Jira · Confluence · GitLab"]]
-
-    classDef cloud fill:#e7eefb,stroke:#2f6fd6,color:#132a52,stroke-width:1.5px;
-    classDef detail fill:#eef0f2,stroke:#8a94a3,color:#333c48,stroke-width:1px,stroke-dasharray:3 3;
-    class CLOUD_B cloud;
-    class SKILLSB detail;
+    STARTB([Начало: аналитическая задача]) --> NAUMEN[Задача в Naumen]
+    NAUMEN --> WRITE_B[Аналитик и агент работают в OpenCode]
+    WRITE_B --> JIRA[Создание задачи в Jira]
+    JIRA --> CONF[Работа с Confluence]
+    CONF --> GITLAB[Работа с GitLab]
+    GITLAB --> BRIDGE_B[МСП, скилы и мост аналитиков]
+    BRIDGE_B --> ENDOKB([Конец: задача решена])
+    WRITE_B -.-> CLOUD_B[Мост, см. схему выше]
+    ENDOKB ==> CLOUD_B
 ```
 
 1. Задача поступает в Naumen.
